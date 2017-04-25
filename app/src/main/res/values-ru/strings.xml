@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Geotask</string>
+    <string name="action_settings">Настройки</string>
+    <string name="address_hint">Начните вводить адрес...</string>
+    <string name="section_format">Оппа: %1$d</string>
+</resources>
