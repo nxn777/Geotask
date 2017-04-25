@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.nnv.geotask.MapFragment">
+    tools:context="com.example.nnv.geotask.ui.fragment.MapFragment">
 
     <AutoCompleteTextView
         android:id="@+id/autoCompleteTextView"

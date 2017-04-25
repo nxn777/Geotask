@@ -1,7 +1,9 @@
-package com.example.nnv.geotask;
+package com.example.nnv.geotask.ui.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.nnv.geotask.R;
 
 public class ResultActivity extends AppCompatActivity {
 

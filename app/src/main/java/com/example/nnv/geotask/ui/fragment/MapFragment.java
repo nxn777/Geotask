@@ -1,4 +1,4 @@
-package com.example.nnv.geotask;
+package com.example.nnv.geotask.ui.fragment;
 
 import android.content.Context;
 import android.net.Uri;
@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.nnv.geotask.common.Globals;
+import com.example.nnv.geotask.R;
 
 
 public class MapFragment extends Fragment {
@@ -42,7 +45,7 @@ public class MapFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    // TODO: Rename method, update argument and hook method into ui event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
