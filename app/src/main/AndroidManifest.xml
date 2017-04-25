@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activity.ChooseActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
@@ -24,7 +24,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDoiTL2TrMzA4ApeQYcjnYTSYD0NBcw_UU" />
 
-        <activity android:name=".ResultActivity"></activity>
+        <activity android:name=".ui.activity.ResultActivity"></activity>
     </application>
 
 </manifest>

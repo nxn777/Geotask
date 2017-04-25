@@ -1,11 +1,11 @@
-package com.example.nnv.geotask;
+package com.example.nnv.geotask.common;
 
 /**
  * Created by nnv on 25.04.17.
  */
 
 public final class Globals {
-    enum PageType {
+    public enum PageType {
         From, To
     }
 }
