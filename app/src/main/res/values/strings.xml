@@ -5,4 +5,6 @@
     <string name="address_hint">Start typing location here</string>
     <string name="geocoder_absent">Geocoder absent</string>
     <string name="coords">Latitude: %1$f, Longitude: %2$f</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
 </resources>

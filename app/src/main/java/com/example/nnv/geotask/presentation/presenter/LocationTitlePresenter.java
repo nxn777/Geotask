@@ -2,9 +2,11 @@ package com.example.nnv.geotask.presentation.presenter;
 
 import android.content.Context;
 import android.location.Address;
+import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.LocationAddressesLoader;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
@@ -17,14 +19,19 @@ import java.util.List;
 public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         implements LocationAddressesLoader.LoaderDelegate{
 
-    private LocationAddressesLoader loader;
+    private LocationAddressesLoader mLoader;
+    private Context mCtx;
 
     public LocationTitlePresenter(Context context) {
-        loader = new LocationAddressesLoader(context, this);
+        this.mCtx = context.getApplicationContext();
     }
 
     public void loadLocations(String location) {
-        loader.execute(location);
+        if (mLoader != null) {
+            mLoader.cancel(true);
+        }
+        mLoader = new LocationAddressesLoader(mCtx, this);
+        mLoader.execute(location);
     }
 
     @Override

@@ -19,39 +19,7 @@ import java.util.Locale;
 /**
  * Created by nnv on 25.04.17.
  */
-/*
-public class LocationAddressesLoader extends AsyncTaskLoader<List<Address>> {
-    public static final String QUERY_DATA = "querydata";
-    private Bundle mArgs;
-    private Geocoder mGeoCoder;
 
-    @Override
-    protected void onStartLoading() {
-        if (Geocoder.isPresent()) {
-            forceLoad();
-        } else {
-            Log.d(Globals.TAG, "onStartLoading: Geocoder is not presented");
-        }
-    }
-
-    @Override
-    public List<Address> loadInBackground() {
-        String queryData = mArgs.getString(QUERY_DATA);
-        List<Address> result = Collections.emptyList();
-        try {
-            result = mGeoCoder.getFromLocationName(queryData, Globals.MAX_RESULTS);
-        } catch (IOException e) {
-            Log.d(Globals.TAG, "loadInBackground: io error");
-        }
-        return result;
-    }
-
-    public LocationAddressesLoader(Context context, Bundle args) {
-        super(context);
-        this.mArgs = args;
-        this.mGeoCoder = new Geocoder(context, Locale.getDefault());
-    }
-}*/
 public class LocationAddressesLoader extends AsyncTask<String, Void, List<Address>> {
 
     public interface LoaderDelegate {
