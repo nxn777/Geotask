@@ -58,10 +58,13 @@ public class LocationAddressesLoader extends AsyncTask<String, Void, List<Addres
 
     private Geocoder mGeoCoder;
     private LoaderDelegate delegate;
+    private Context mCtx;
 
-    public LocationAddressesLoader(LoaderDelegate delegate) {
+    public LocationAddressesLoader(Context ctx, LoaderDelegate delegate) {
         super();
         this.delegate = delegate;
+        this.mCtx = ctx.getApplicationContext();
+        mGeoCoder = new Geocoder(mCtx, Locale.getDefault());
     }
 
     @Override
