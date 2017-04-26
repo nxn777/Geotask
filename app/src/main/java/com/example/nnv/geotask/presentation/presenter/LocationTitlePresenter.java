@@ -6,33 +6,28 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
+import com.arellomobile.mvp.InjectViewState;
+import com.arellomobile.mvp.MvpPresenter;
 import com.example.nnv.geotask.common.LocationAddressesLoader;
+import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
 import java.util.List;
 
 /**
  * Created by nnv on 25.04.17.
  */
+@InjectViewState
+public class LocationTitlePresenter extends MvpPresenter<LocationTitleView> {
+    //private Context mCtx;
+    private int mId;
+    private LocationAddressesLoader loader;
 
-public class LocationTitlePresenter implements LoaderManager.LoaderCallbacks<List<Address>> {
-    private Context mCtx;
-
-    public LocationTitlePresenter(Context context) {
-        this.mCtx = context.getApplicationContext();
+    public LocationTitlePresenter(Context context, int id) {
+        //this.mCtx = context.getApplicationContext();
+        this.mId = id;
+        loader = new LocationAddressesLoader();
+        loader.
     }
 
-    @Override
-    public Loader<List<Address>> onCreateLoader(int id, Bundle args) {
-        return new LocationAddressesLoader(mCtx, args);
-    }
 
-    @Override
-    public void onLoadFinished(Loader<List<Address>> loader, List<Address> data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Address>> loader) {
-
-    }
 }
