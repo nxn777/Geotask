@@ -9,6 +9,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.os.AsyncTaskCompat;
 import android.util.Log;
 
+import com.example.nnv.geotask.R;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -54,6 +56,7 @@ public class LocationAddressesLoader extends AsyncTask<String, Void, List<Addres
 
     public interface LoaderDelegate {
         void onLoaderReady(List<Address> resultList);
+        void onError(String errorDescription);
     }
 
     private Geocoder mGeoCoder;
@@ -72,6 +75,7 @@ public class LocationAddressesLoader extends AsyncTask<String, Void, List<Addres
         if (!Geocoder.isPresent()) {
             Log.d(Globals.TAG, "onPreExecute: Geocoder is not presented");
             cancel(true);
+            delegate.onError(mCtx.getString(R.string.geocoder_absent));
         }
     }
 

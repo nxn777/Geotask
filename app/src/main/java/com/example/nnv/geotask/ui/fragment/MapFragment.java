@@ -1,25 +1,40 @@
 package com.example.nnv.geotask.ui.fragment;
 
 import android.content.Context;
+import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
+import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.R;
+import com.example.nnv.geotask.presentation.view.LocationTitleView;
+
+import java.util.List;
 
 
-public class MapFragment extends Fragment {
+public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
     private static final String TYPE_PARAM = "type";
     private Globals.PageType mPageType;
-    private OnFragmentInteractionListener mListener;
+    private AutoCompleteTextView actvAdresses;
+
+    /** LifeCycle */
 
     public MapFragment() {
         // Required empty public constructor
     }
+
 
 
     public static MapFragment newInstance(Globals.PageType pageType) {
@@ -45,42 +60,63 @@ public class MapFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into ui event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        actvAdresses = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
+    }
+
+    /** LocationTitleView*/
+
+    @Override
+    public void updateLocationList(List<Address> addressList) {
+
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+    public void showError(String error) {
+
+    }
+
+    class LocationAdapter extends ArrayAdapter<Address> {
+
+        public LocationAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull List<Address> objects) {
+            super(context, resource, objects);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            LocationViewHolder holder;
+            if (convertView == null) {
+                convertView = View.inflate(getContext(), R.layout.location_item, parent);
+                holder = new LocationViewHolder();
+                holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+                holder.tvAddress = (TextView) convertView.findViewById(R.id.tvAddress);
+                holder.tvCoords = (TextView) convertView.findViewById(R.id.tvCoords);
+                convertView.setTag(holder);
+            } else {
+                holder = (LocationViewHolder) convertView.getTag();
+            }
+            Address item = getItem(position);
+            String addresses = "";
+            if (item == null) { return convertView; }
+            holder.tvTitle.setText(item.getFeatureName());
+            for (int i = 0; i < item.getMaxAddressLineIndex(); i++) {
+                addresses = addresses + item.getAddressLine(i) + "\n";
+            }
+            holder.tvAddress.setText(addresses);
+            holder.tvCoords.setText(String.format(getResources().getString(R.string.coords),
+                    item.getLatitude(),
+                    item.getLongitude()));
+
+            return convertView;
         }
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    private static class LocationViewHolder {
+        TextView tvTitle;
+        TextView tvAddress;
+        TextView tvCoords;
     }
 }
