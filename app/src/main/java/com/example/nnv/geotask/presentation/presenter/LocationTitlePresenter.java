@@ -2,16 +2,13 @@ package com.example.nnv.geotask.presentation.presenter;
 
 import android.content.Context;
 import android.location.Address;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
-import com.example.nnv.geotask.common.Globals;
-import com.example.nnv.geotask.common.LocationAddressesLoader;
+import com.example.nnv.geotask.common.utils.LocationAddressesLoader;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by nnv on 25.04.17.

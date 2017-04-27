@@ -14,7 +14,7 @@ import java.util.List;
  * Created by nnv on 25.04.17.
  */
 
-@StateStrategyType(AddToEndStrategy.class)
+@StateStrategyType(AddToEndSingleStrategy.class)
 public interface LocationTitleView  extends MvpView {
     void updateLocationList(ArrayList<Address> addressList);
     void showError(String error);

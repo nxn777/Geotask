@@ -1,6 +1,7 @@
 package com.example.nnv.geotask.common.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Address;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
     private LayoutInflater mLayoutInflater;
     private ArrayList<T> mItems;
     private Context mCtx;
+    private int mLayout;
 
     @Override
     public int getCount() {
@@ -51,6 +54,8 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
     public LocationAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull ArrayList<T> objects) {
         mLayoutInflater = LayoutInflater.from(context);
         mCtx = context.getApplicationContext();
+        mItems = objects;
+        mLayout = resource;
     }
 
     @Override
@@ -62,12 +67,17 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
         return res;
     }
 
+    private String nullAsString(String str) {
+        return (str == null) ? "" : str;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
         LocationViewHolder holder;
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.location_item, parent, false);
+            convertView = mLayoutInflater.inflate(mLayout, parent, false);
             holder = new LocationViewHolder();
             holder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
             holder.tvAddress = (TextView) convertView.findViewById(R.id.tvAddress);
@@ -78,18 +88,17 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
         }
         T item = getItem(position);
         if (item instanceof Address) {
-            String addresses = "";
-
-            holder.tvTitle.setText(((Address)item).getFeatureName());
-            for (int i = 0; i < ((Address)item).getMaxAddressLineIndex(); i++) {
-                addresses = addresses + ((Address)item).getAddressLine(i) + "\n";
-            }
-            holder.tvAddress.setText(addresses);
+            String title = nullAsString(((Address)item).getCountryName()) + " " +
+                            nullAsString(((Address)item).getAdminArea()) + " " +
+                            nullAsString(((Address)item).getLocality());
+            holder.tvTitle.setText(title);
+            holder.tvAddress.setText(((Address)item).getAddressLine(0));
             holder.tvCoords.setText(String.format(mCtx.getString(R.string.coords),
                     ((Address)item).getLatitude(),
                     ((Address)item).getLongitude()));
         }
-        Log.i(Globals.TAG, "getView: "+position+" " + item.toString() + "\n");
+        convertView.setBackgroundColor((position % 2 == 0) ?  Color.LTGRAY : Color.WHITE);
+        //Log.i(Globals.TAG, "getView: "+position+" " + item.toString() + "\n");
         return convertView;
     }
 

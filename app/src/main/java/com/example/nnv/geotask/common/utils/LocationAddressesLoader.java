@@ -1,4 +1,4 @@
-package com.example.nnv.geotask.common;
+package com.example.nnv.geotask.common.utils;
 
 import android.content.Context;
 import android.location.Address;
@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.nnv.geotask.R;
+import com.example.nnv.geotask.common.Globals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class LocationAddressesLoader extends AsyncTask<String, Void, ArrayList<A
     @Override
     protected ArrayList<Address> doInBackground(String... params) {
         String queryData = params[0];
-        ArrayList<Address> result = new ArrayList<>();//Collections.emptyList();
+        ArrayList<Address> result = new ArrayList<>();
         try {
             List<Address> res = mGeoCoder.getFromLocationName(queryData, Globals.MAX_RESULTS);
             result.addAll(res);

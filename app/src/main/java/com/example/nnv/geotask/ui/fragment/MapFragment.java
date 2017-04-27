@@ -92,6 +92,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             }
         });
         actvAdresses.setThreshold(3);
+
     }
 
     /** LocationTitleView*/

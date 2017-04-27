@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -7,18 +8,21 @@
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        tools:text="Caption" />
 
     <TextView
         android:id="@+id/tvAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="Address line" />
 
     <TextView
         android:id="@+id/tvCoords"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="viewEnd"
-        android:gravity="end"/>
+        android:gravity="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        tools:text="Coords" />
 </LinearLayout>
