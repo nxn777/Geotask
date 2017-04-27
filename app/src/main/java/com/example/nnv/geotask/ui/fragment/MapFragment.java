@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.example.nnv.geotask.common.Globals.concatNullableStrings;
 import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 
@@ -166,9 +167,9 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     @Override
     public void showSelected(Address address) {
         if (address != null) {
-            String title = nullAsString(address.getAdminArea()) + " " +
-                       nullAsString(address.getLocality()) + " " +
-                        nullAsString(address.getAddressLine(0));
+            String title = concatNullableStrings(", ", address.getAdminArea(),
+                    address.getLocality(),
+                    address.getAddressLine(0));
             mAtvAdresses.setText(title);
         } else {
             mAtvAdresses.setText(null);

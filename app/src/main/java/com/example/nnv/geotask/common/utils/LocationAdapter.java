@@ -21,6 +21,7 @@ import com.example.nnv.geotask.common.Globals;
 
 import java.util.ArrayList;
 
+import static com.example.nnv.geotask.common.Globals.concatNullableStrings;
 import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 /**
@@ -88,9 +89,9 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
         }
         T item = getItem(position);
         if (item instanceof Address) {
-            String title = nullAsString(((Address)item).getCountryName()) + " " +
-                            nullAsString(((Address)item).getAdminArea()) + " " +
-                            nullAsString(((Address)item).getLocality());
+            String title = concatNullableStrings(", ", ((Address)item).getCountryName(),
+                    ((Address)item).getAdminArea(),
+                    ((Address)item).getLocality());
             holder.tvTitle.setText(title);
             holder.tvAddress.setText(((Address)item).getAddressLine(0));
             holder.tvCoords.setText(String.format(mCtx.getString(R.string.coords),
