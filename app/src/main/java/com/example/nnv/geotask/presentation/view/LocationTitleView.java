@@ -18,4 +18,5 @@ import java.util.List;
 public interface LocationTitleView  extends MvpView {
     void updateLocationList(ArrayList<Address> addressList);
     void showError(String error);
+    void toggleControls(boolean isSearching);
 }

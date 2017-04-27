@@ -32,9 +32,11 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         }
         mLoader = new LocationAddressesLoader(mCtx, this);
         mLoader.execute(location);
+        getViewState().toggleControls(true);
     }
 
     public void getLocationList() {
+        getViewState().toggleControls(false);
         getViewState().updateLocationList(addresses);
     }
 
@@ -46,6 +48,7 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
     public void onLoaderReady(ArrayList<Address> resultList) {
         getViewState().updateLocationList(resultList);
         addresses = resultList;
+        getViewState().toggleControls(false);
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -23,15 +24,14 @@ import com.example.nnv.geotask.presentation.presenter.LocationTitlePresenter;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 
 public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
     private static final String TYPE_PARAM = "type";
     private Globals.PageType mPageType;
-    private AutoCompleteTextView actvAdresses;
-    private Button clearBtn;
+    private AutoCompleteTextView mAtvAdresses;
+    private Button mClearBtn;
+    private ProgressBar mProgressBar;
     private LocationAdapter<Address> mAdapter;
     @InjectPresenter
     LocationTitlePresenter mTitlePresenter;
@@ -73,9 +73,10 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        actvAdresses = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
-        actvAdresses.setAdapter(mAdapter);
-        actvAdresses.addTextChangedListener(new TextWatcher() {
+        mAtvAdresses = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.searchProgressBar);
+        mAtvAdresses.setAdapter(mAdapter);
+        mAtvAdresses.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -88,16 +89,17 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                 mTitlePresenter.loadLocations(s.toString());
             }
         });
-        actvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
-        clearBtn = (Button) view.findViewById(R.id.btnClear);
-        clearBtn.setOnClickListener(new View.OnClickListener() {
+        mAtvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
+        mClearBtn = (Button) view.findViewById(R.id.btnClear);
+        mClearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                actvAdresses.setText(null);
+                mAtvAdresses.setText(null); //TODO: move to presenter
                 mTitlePresenter.clearLocationList();
                 mTitlePresenter.getLocationList();
             }
         });
+        mTitlePresenter.getLocationList();
     }
 
     /** LocationTitleView*/
@@ -112,7 +114,14 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         Snackbar.make(getActivity().findViewById(R.id.main_content), error, Snackbar.LENGTH_LONG).show();
     }
 
-
-
-
+    @Override
+    public void toggleControls(boolean isSearching) {
+        if (isSearching) {
+            mProgressBar.setVisibility(View.VISIBLE);
+            mClearBtn.setVisibility(View.GONE);
+        } else {
+            mProgressBar.setVisibility(View.GONE);
+            mClearBtn.setVisibility(View.VISIBLE);
+        }
+    }
 }
