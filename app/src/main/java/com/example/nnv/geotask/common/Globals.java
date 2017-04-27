@@ -15,6 +15,9 @@ public final class Globals {
     public static final int SEARCH_THRESHOLD = 3;
     public static final String TAG = "GEO:";
 
-    public static final int MESSAGE_TEXT_CHANGED = 100;
     public static final int DEFAULT_AUTOCOMPLETE_DELAY = 750;
+
+    public static String nullAsString(String str) {
+        return (str == null) ? "" : str;
+    }
 }

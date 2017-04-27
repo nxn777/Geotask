@@ -21,6 +21,8 @@ import com.example.nnv.geotask.common.Globals;
 
 import java.util.ArrayList;
 
+import static com.example.nnv.geotask.common.Globals.nullAsString;
+
 /**
  * Created by nnv on 27.04.17.
  */
@@ -67,9 +69,7 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
         return res;
     }
 
-    private String nullAsString(String str) {
-        return (str == null) ? "" : str;
-    }
+
 
     @NonNull
     @Override

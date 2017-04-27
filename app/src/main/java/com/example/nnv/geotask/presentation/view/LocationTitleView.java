@@ -20,4 +20,5 @@ public interface LocationTitleView  extends MvpView {
     void updateLocationList(ArrayList<Address> addressList);
     void showError(String error);
     void toggleControls(Globals.SearchState searchState);
+    void showSelected(Address address);
 }

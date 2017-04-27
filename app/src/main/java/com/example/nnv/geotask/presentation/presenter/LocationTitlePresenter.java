@@ -21,11 +21,13 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
 
     private LocationAddressesLoader mLoader;
     private Context mCtx;
-    private ArrayList<Address> addresses;
+    private ArrayList<Address> mAddresses;
+    private Address mSelectedAddress;
+
 
     public LocationTitlePresenter(Context context) {
         this.mCtx = context.getApplicationContext();
-        addresses = new ArrayList<>();
+        mAddresses = new ArrayList<>();
     }
 
     public void loadLocations(final String location) {
@@ -39,17 +41,26 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
 
     public void getLocationList() {
         getViewState().toggleControls(Globals.SearchState.Typing);
-        getViewState().updateLocationList(addresses);
+        getViewState().updateLocationList(mAddresses);
     }
 
     public void clearLocationList() {
-        addresses = new ArrayList<>();
+        mAddresses = new ArrayList<>();
+    }
+
+    public Address getSelectedAddress() {
+        return mSelectedAddress;
+    }
+
+    public void setSelectedAddress(Address selectedAddress) {
+        this.mSelectedAddress = selectedAddress;
+        getViewState().showSelected(mSelectedAddress);
     }
 
     @Override
     public void onLoaderReady(ArrayList<Address> resultList) {
         getViewState().updateLocationList(resultList);
-        addresses = resultList;
+        mAddresses = resultList;
         getViewState().toggleControls(Globals.SearchState.Typing);
     }
 

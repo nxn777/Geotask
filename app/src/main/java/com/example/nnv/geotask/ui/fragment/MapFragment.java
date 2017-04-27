@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -28,6 +29,8 @@ import com.example.nnv.geotask.presentation.view.LocationTitleView;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 
 public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
@@ -115,11 +118,18 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             }
         });
         mAtvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
+        mAtvAdresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position));
+            }
+        });
+
         mClearBtn = (Button) view.findViewById(R.id.btnClear);
         mClearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAtvAdresses.setText(null); //TODO: move to presenter
+                mTitlePresenter.setSelectedAddress(null);
                 mTitlePresenter.clearLocationList();
                 mTitlePresenter.getLocationList();
             }
@@ -150,6 +160,18 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                 mProgressBar.setVisibility(View.GONE);
                 mClearBtn.setVisibility(View.VISIBLE);
                 break;
+        }
+    }
+
+    @Override
+    public void showSelected(Address address) {
+        if (address != null) {
+            String title = nullAsString(address.getAdminArea()) + " " +
+                       nullAsString(address.getLocality()) + " " +
+                        nullAsString(address.getAddressLine(0));
+            mAtvAdresses.setText(title);
+        } else {
+            mAtvAdresses.setText(null);
         }
     }
 }
