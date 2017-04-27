@@ -115,13 +115,16 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     }
 
     @Override
-    public void toggleControls(boolean isSearching) {
-        if (isSearching) {
-            mProgressBar.setVisibility(View.VISIBLE);
-            mClearBtn.setVisibility(View.GONE);
-        } else {
-            mProgressBar.setVisibility(View.GONE);
-            mClearBtn.setVisibility(View.VISIBLE);
+    public void toggleControls(Globals.SearchState state) {
+        switch (state){
+            case Searching:
+                mProgressBar.setVisibility(View.VISIBLE);
+                mClearBtn.setVisibility(View.GONE);
+                break;
+            case Typing:
+                mProgressBar.setVisibility(View.GONE);
+                mClearBtn.setVisibility(View.VISIBLE);
+                break;
         }
     }
 }

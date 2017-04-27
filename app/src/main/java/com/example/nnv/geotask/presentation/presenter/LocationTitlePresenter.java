@@ -5,6 +5,7 @@ import android.location.Address;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.utils.LocationAddressesLoader;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
@@ -32,11 +33,11 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         }
         mLoader = new LocationAddressesLoader(mCtx, this);
         mLoader.execute(location);
-        getViewState().toggleControls(true);
+        getViewState().toggleControls(Globals.SearchState.Searching);
     }
 
     public void getLocationList() {
-        getViewState().toggleControls(false);
+        getViewState().toggleControls(Globals.SearchState.Typing);
         getViewState().updateLocationList(addresses);
     }
 
@@ -48,7 +49,7 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
     public void onLoaderReady(ArrayList<Address> resultList) {
         getViewState().updateLocationList(resultList);
         addresses = resultList;
-        getViewState().toggleControls(false);
+        getViewState().toggleControls(Globals.SearchState.Typing);
     }
 
     @Override

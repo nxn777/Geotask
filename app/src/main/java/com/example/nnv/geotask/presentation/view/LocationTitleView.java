@@ -6,6 +6,7 @@ import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
+import com.example.nnv.geotask.common.Globals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,5 +19,5 @@ import java.util.List;
 public interface LocationTitleView  extends MvpView {
     void updateLocationList(ArrayList<Address> addressList);
     void showError(String error);
-    void toggleControls(boolean isSearching);
+    void toggleControls(Globals.SearchState searchState);
 }
