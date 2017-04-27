@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -30,6 +31,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     private static final String TYPE_PARAM = "type";
     private Globals.PageType mPageType;
     private AutoCompleteTextView actvAdresses;
+    private Button clearBtn;
     private LocationAdapter<Address> mAdapter;
     @InjectPresenter
     LocationTitlePresenter mTitlePresenter;
@@ -65,7 +67,6 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
@@ -76,14 +77,10 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         actvAdresses.setAdapter(mAdapter);
         actvAdresses.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.i(Globals.TAG, "onTextChanged: " + s);
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -91,8 +88,16 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                 mTitlePresenter.loadLocations(s.toString());
             }
         });
-        actvAdresses.setThreshold(3);
-
+        actvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
+        clearBtn = (Button) view.findViewById(R.id.btnClear);
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                actvAdresses.setText(null);
+                mTitlePresenter.clearLocationList();
+                mTitlePresenter.getLocationList();
+            }
+        });
     }
 
     /** LocationTitleView*/

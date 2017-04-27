@@ -19,9 +19,11 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
 
     private LocationAddressesLoader mLoader;
     private Context mCtx;
+    private ArrayList<Address> addresses;
 
     public LocationTitlePresenter(Context context) {
         this.mCtx = context.getApplicationContext();
+        addresses = new ArrayList<>();
     }
 
     public void loadLocations(String location) {
@@ -32,9 +34,18 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         mLoader.execute(location);
     }
 
+    public void getLocationList() {
+        getViewState().updateLocationList(addresses);
+    }
+
+    public void clearLocationList() {
+        addresses = new ArrayList<>();
+    }
+
     @Override
     public void onLoaderReady(ArrayList<Address> resultList) {
         getViewState().updateLocationList(resultList);
+        addresses = resultList;
     }
 
     @Override

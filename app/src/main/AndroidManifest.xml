@@ -12,8 +12,7 @@
         <activity
             android:name=".ui.activity.ChooseActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.Launcher"
-            android:windowSoftInputMode="stateHidden">
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

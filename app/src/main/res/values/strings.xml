@@ -8,4 +8,5 @@
     <string name="coords">Latitude: %1$f, Longitude: %2$f</string>
     <string name="from">From</string>
     <string name="to">To</string>
+    <string name="clear_sign" translatable="false">X</string>
 </resources>
