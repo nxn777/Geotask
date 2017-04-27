@@ -4,15 +4,12 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.os.AsyncTaskCompat;
 import android.util.Log;
 
 import com.example.nnv.geotask.R;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,10 +17,10 @@ import java.util.Locale;
  * Created by nnv on 25.04.17.
  */
 
-public class LocationAddressesLoader extends AsyncTask<String, Void, List<Address>> {
+public class LocationAddressesLoader extends AsyncTask<String, Void, ArrayList<Address>> {
 
     public interface LoaderDelegate {
-        void onLoaderReady(List<Address> resultList);
+        void onLoaderReady(ArrayList<Address> resultList);
         void onError(String errorDescription);
     }
 
@@ -41,26 +38,28 @@ public class LocationAddressesLoader extends AsyncTask<String, Void, List<Addres
     @Override
     protected void onPreExecute() {
         if (!Geocoder.isPresent()) {
-            Log.d(Globals.TAG, "onPreExecute: Geocoder is not presented");
+            Log.i(Globals.TAG, "onPreExecute: Geocoder is not presented");
             cancel(true);
             delegate.onError(mCtx.getString(R.string.geocoder_absent));
         }
     }
 
     @Override
-    protected List<Address> doInBackground(String... params) {
+    protected ArrayList<Address> doInBackground(String... params) {
         String queryData = params[0];
-        List<Address> result = Collections.emptyList();
+        ArrayList<Address> result = new ArrayList<>();//Collections.emptyList();
         try {
-            result = mGeoCoder.getFromLocationName(queryData, Globals.MAX_RESULTS);
+            List<Address> res = mGeoCoder.getFromLocationName(queryData, Globals.MAX_RESULTS);
+            result.addAll(res);
         } catch (IOException e) {
-            Log.d(Globals.TAG, "loadInBackground: io error");
+            Log.i(Globals.TAG, "loadInBackground: io error");
+            delegate.onError(mCtx.getString(R.string.geocoder_error));
         }
         return result;
     }
 
     @Override
-    protected void onPostExecute(List<Address> addressList) {
+    protected void onPostExecute(ArrayList<Address> addressList) {
         delegate.onLoaderReady(addressList);
         super.onPostExecute(addressList);
     }

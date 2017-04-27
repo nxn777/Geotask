@@ -10,6 +10,7 @@ import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.LocationAddressesLoader;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
     }
 
     @Override
-    public void onLoaderReady(List<Address> resultList) {
+    public void onLoaderReady(ArrayList<Address> resultList) {
         getViewState().updateLocationList(resultList);
     }
 
