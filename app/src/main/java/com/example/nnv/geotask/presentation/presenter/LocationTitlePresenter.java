@@ -2,6 +2,7 @@ package com.example.nnv.geotask.presentation.presenter;
 
 import android.content.Context;
 import android.location.Address;
+import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -27,7 +28,7 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         addresses = new ArrayList<>();
     }
 
-    public void loadLocations(String location) {
+    public void loadLocations(final String location) {
         if (mLoader != null) {
             mLoader.cancel(true);
         }

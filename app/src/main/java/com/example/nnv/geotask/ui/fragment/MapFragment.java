@@ -2,6 +2,8 @@ package com.example.nnv.geotask.ui.fragment;
 
 import android.location.Address;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
@@ -24,6 +26,8 @@ import com.example.nnv.geotask.presentation.presenter.LocationTitlePresenter;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
@@ -77,6 +81,8 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         mProgressBar = (ProgressBar) view.findViewById(R.id.searchProgressBar);
         mAtvAdresses.setAdapter(mAdapter);
         mAtvAdresses.addTextChangedListener(new TextWatcher() {
+            private Timer timer;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
@@ -84,8 +90,27 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(final Editable s) {
                 Log.i(Globals.TAG, "afterTextChanged: "+s.toString());
+                if (timer != null) {
+                    timer.cancel();
+                    timer = null;
+                }
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Log.i(Globals.TAG, "delayed afterTextChanged: "+s.toString());
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mTitlePresenter.loadLocations(s.toString());
+                            }
+                        });
+
+                    }
+
+                }, Globals.DEFAULT_AUTOCOMPLETE_DELAY);
                 mTitlePresenter.loadLocations(s.toString());
             }
         });
