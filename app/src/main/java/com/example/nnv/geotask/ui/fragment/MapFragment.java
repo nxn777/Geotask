@@ -165,6 +165,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             public void onClick(View v) {
                 mTitlePresenter.setSelectedAddress(null);
                 mTitlePresenter.clearLocationList();
+                mMapPresenter.clearMap();
                 mTitlePresenter.getLocationList();
             }
         });

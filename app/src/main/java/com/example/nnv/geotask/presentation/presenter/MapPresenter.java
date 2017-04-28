@@ -29,9 +29,15 @@ public class MapPresenter extends MvpPresenter<AddressMapView> implements OnMapR
         }
     }
 
+    public void clearMap() {
+        if (mGoogleMap != null) {
+            this.mAddress = null;
+            getViewState().clearMap(mGoogleMap);
+        }
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.i(Globals.TAG, "onMapReady: ");
         this.mGoogleMap = googleMap;
         if (mAddress != null) {
             showAddress(mAddress);
