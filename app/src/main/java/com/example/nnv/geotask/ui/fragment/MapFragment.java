@@ -29,7 +29,17 @@ import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.utils.AutoCompleteWOReplacingTV;
 import com.example.nnv.geotask.common.utils.LocationAdapter;
 import com.example.nnv.geotask.presentation.presenter.LocationTitlePresenter;
+import com.example.nnv.geotask.presentation.presenter.MapPresenter;
+import com.example.nnv.geotask.presentation.view.AddressMapView;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -39,16 +49,19 @@ import static com.example.nnv.geotask.common.Globals.concatNullableStrings;
 import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 
-public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
+public class MapFragment extends MvpAppCompatFragment implements LocationTitleView, AddressMapView {
     private static final String TYPE_PARAM = "type";
     private Globals.PageType mPageType;
     private AutoCompleteWOReplacingTV mAtvAdresses;
     private Button mClearBtn;
     private ProgressBar mProgressBar;
     private LocationAdapter<Address> mAdapter;
+
     private boolean mJustShowOnce;
     @InjectPresenter
     LocationTitlePresenter mTitlePresenter;
+    @InjectPresenter
+    MapPresenter mMapPresenter;
 
     @ProvidePresenter
     LocationTitlePresenter provideLocationTitlePresenter() {
@@ -85,11 +98,8 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mAtvAdresses = (AutoCompleteWOReplacingTV) view.findViewById(R.id.autoCompleteTextView);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.searchProgressBar);
+
+    private void initACTV() {
         mAtvAdresses.setAdapter(mAdapter);
         mAtvAdresses.addTextChangedListener(new TextWatcher() {
             private Timer timer;
@@ -137,13 +147,25 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                 hideKeyboard(mAtvAdresses);
             }
         });
+    }
 
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mAtvAdresses = (AutoCompleteWOReplacingTV) view.findViewById(R.id.autoCompleteTextView);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.searchProgressBar);
         mClearBtn = (Button) view.findViewById(R.id.btnClear);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(mMapPresenter);
+        initACTV();
         mClearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mTitlePresenter.setSelectedAddress(null);
                 mTitlePresenter.clearLocationList();
+                mMapPresenter.clearMap();
                 mTitlePresenter.getLocationList();
             }
         });
@@ -187,11 +209,33 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         mJustShowOnce = true;
         if (address != null) {
             String title = concatNullableStrings(", ", address.getAdminArea(),
-                    //address.getLocality(),
                     address.getAddressLine(0));
             mAtvAdresses.setText(title);
+            mMapPresenter.showAddress(address);
         } else {
             mAtvAdresses.setText(null);
         }
     }
+
+    /** AddressMapView */
+    @Override
+    public void showAddressOnMap(Address address, GoogleMap googleMap) {
+        Log.i(Globals.TAG, "showAddressOnMap: ");
+        String title = concatNullableStrings(", ", address.getAdminArea(),
+                address.getAddressLine(0));
+        LatLng addressLoc = new LatLng(address.getLatitude(), address.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(addressLoc).title(title));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(addressLoc, Globals.MAP_ZOOM));
+    }
+
+    @Override
+    public void clearMap(GoogleMap googleMap) {
+        googleMap.clear();
+    }
+
+    @Override
+    public void showError(int errorId) {
+        Snackbar.make(getActivity().findViewById(R.id.main_content), getString(errorId), Snackbar.LENGTH_LONG).show();
+    }
 }
+//TODO: remove repeating search after device rotation

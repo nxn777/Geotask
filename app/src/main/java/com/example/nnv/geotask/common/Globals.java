@@ -16,7 +16,7 @@ public final class Globals {
     public static final int MAX_RESULTS = 7;
     public static final int SEARCH_THRESHOLD = 3;
     public static final String TAG = "GEO:";
-
+    public static final int MAP_ZOOM = 10; // 1 - world, 5 - continent, 10 - city, 15 - streets, 20 - buildings
     public static final int DEFAULT_AUTOCOMPLETE_DELAY = 750;
 
     public static String nullAsString(String str) {

@@ -9,4 +9,5 @@
     <string name="from">Откуда</string>
     <string name="to">Куда</string>
     <string name="geocoder_error">Ошибка при получении данных geocoder</string>
+    <string name="map_not_ready">Google карты не готовы</string>
 </resources>
