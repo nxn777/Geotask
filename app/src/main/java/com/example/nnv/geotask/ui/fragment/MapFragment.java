@@ -225,7 +225,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                 address.getAddressLine(0));
         LatLng addressLoc = new LatLng(address.getLatitude(), address.getLongitude());
         googleMap.addMarker(new MarkerOptions().position(addressLoc).title(title));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(addressLoc));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(addressLoc, Globals.MAP_ZOOM));
     }
 
     @Override
