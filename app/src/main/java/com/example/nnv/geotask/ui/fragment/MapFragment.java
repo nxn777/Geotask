@@ -1,5 +1,6 @@
 package com.example.nnv.geotask.ui.fragment;
 
+import android.content.Context;
 import android.location.Address;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -122,7 +124,9 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         mAtvAdresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position));
+                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position)); //TODO: hide keyboard
+                mAtvAdresses.clearFocus();
+                hideKeyboard(mAtvAdresses);
             }
         });
 
@@ -138,6 +142,12 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         mTitlePresenter.getLocationList();
     }
 
+    private void hideKeyboard(View v) {
+        if (v != null) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
+    }
     /** LocationTitleView*/
 
     @Override
@@ -168,9 +178,9 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     public void showSelected(Address address) {
         if (address != null) {
             String title = concatNullableStrings(", ", address.getAdminArea(),
-                    address.getLocality(),
+                    //address.getLocality(),
                     address.getAddressLine(0));
-            mAtvAdresses.setText(title);
+            mAtvAdresses.setText(title); //TODO: avoid second search
         } else {
             mAtvAdresses.setText(null);
         }
