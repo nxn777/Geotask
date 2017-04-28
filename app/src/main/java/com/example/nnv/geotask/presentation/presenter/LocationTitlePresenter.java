@@ -57,6 +57,8 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         getViewState().showSelected(mSelectedAddress);
     }
 
+    /** LocationAddressesLoader.LoaderDelegate */
+
     @Override
     public void onLoaderReady(ArrayList<Address> resultList) {
         getViewState().updateLocationList(resultList);

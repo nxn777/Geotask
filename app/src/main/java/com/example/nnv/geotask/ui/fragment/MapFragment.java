@@ -29,7 +29,9 @@ import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.utils.AutoCompleteWOReplacingTV;
 import com.example.nnv.geotask.common.utils.LocationAdapter;
 import com.example.nnv.geotask.presentation.presenter.LocationTitlePresenter;
+import com.example.nnv.geotask.presentation.view.AddressMapView;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
+import com.google.android.gms.maps.MapView;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -39,13 +41,14 @@ import static com.example.nnv.geotask.common.Globals.concatNullableStrings;
 import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 
-public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
+public class MapFragment extends MvpAppCompatFragment implements LocationTitleView, AddressMapView {
     private static final String TYPE_PARAM = "type";
     private Globals.PageType mPageType;
     private AutoCompleteWOReplacingTV mAtvAdresses;
     private Button mClearBtn;
     private ProgressBar mProgressBar;
     private LocationAdapter<Address> mAdapter;
+    private MapView mMapView;
     private boolean mJustShowOnce;
     @InjectPresenter
     LocationTitlePresenter mTitlePresenter;
@@ -90,6 +93,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         super.onViewCreated(view, savedInstanceState);
         mAtvAdresses = (AutoCompleteWOReplacingTV) view.findViewById(R.id.autoCompleteTextView);
         mProgressBar = (ProgressBar) view.findViewById(R.id.searchProgressBar);
+        mMapView = (MapView) view.findViewById(R.id.mapView);
         mAtvAdresses.setAdapter(mAdapter);
         mAtvAdresses.addTextChangedListener(new TextWatcher() {
             private Timer timer;
@@ -193,5 +197,16 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         } else {
             mAtvAdresses.setText(null);
         }
+    }
+
+    /** AddressMapView */
+    @Override
+    public void showAddressOnMap(Address address) {
+
+    }
+
+    @Override
+    public void clearMap() {
+
     }
 }
