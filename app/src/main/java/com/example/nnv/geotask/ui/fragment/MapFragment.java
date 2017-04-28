@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,14 @@ import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.nnv.geotask.R;
 import com.example.nnv.geotask.common.Globals;
+import com.example.nnv.geotask.common.utils.AutoCompleteWOReplacingTV;
 import com.example.nnv.geotask.common.utils.LocationAdapter;
 import com.example.nnv.geotask.presentation.presenter.LocationTitlePresenter;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
@@ -39,10 +42,11 @@ import static com.example.nnv.geotask.common.Globals.nullAsString;
 public class MapFragment extends MvpAppCompatFragment implements LocationTitleView {
     private static final String TYPE_PARAM = "type";
     private Globals.PageType mPageType;
-    private AutoCompleteTextView mAtvAdresses;
+    private AutoCompleteWOReplacingTV mAtvAdresses;
     private Button mClearBtn;
     private ProgressBar mProgressBar;
     private LocationAdapter<Address> mAdapter;
+    private boolean mJustShowOnce;
     @InjectPresenter
     LocationTitlePresenter mTitlePresenter;
 
@@ -72,6 +76,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             mPageType = (Globals.PageType) getArguments().getSerializable(TYPE_PARAM);
         }
         mAdapter = new LocationAdapter<>(getContext(), R.layout.location_item, new ArrayList<Address>());
+        mJustShowOnce = false;
     }
 
     @Override
@@ -83,7 +88,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAtvAdresses = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
+        mAtvAdresses = (AutoCompleteWOReplacingTV) view.findViewById(R.id.autoCompleteTextView);
         mProgressBar = (ProgressBar) view.findViewById(R.id.searchProgressBar);
         mAtvAdresses.setAdapter(mAdapter);
         mAtvAdresses.addTextChangedListener(new TextWatcher() {
@@ -97,6 +102,10 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
 
             @Override
             public void afterTextChanged(final Editable s) {
+                if (mJustShowOnce) {
+                    mJustShowOnce = false;
+                    return;
+                }
                 Log.i(Globals.TAG, "afterTextChanged: "+s.toString());
                 if (timer != null) {
                     timer.cancel();
@@ -123,8 +132,8 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         mAtvAdresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position)); 
-                mAtvAdresses.clearFocus();
+                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position));
+                //mAtvAdresses.clearFocus();
                 hideKeyboard(mAtvAdresses);
             }
         });
@@ -175,11 +184,12 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
 
     @Override
     public void showSelected(Address address) {
+        mJustShowOnce = true;
         if (address != null) {
             String title = concatNullableStrings(", ", address.getAdminArea(),
                     //address.getLocality(),
                     address.getAddressLine(0));
-            mAtvAdresses.setText(title); //TODO: avoid second search
+            mAtvAdresses.setText(title);
         } else {
             mAtvAdresses.setText(null);
         }
