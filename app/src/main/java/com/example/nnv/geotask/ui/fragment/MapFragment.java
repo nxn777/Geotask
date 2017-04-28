@@ -117,14 +117,13 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                     }
 
                 }, Globals.DEFAULT_AUTOCOMPLETE_DELAY);
-                mTitlePresenter.loadLocations(s.toString());
             }
         });
         mAtvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
         mAtvAdresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position)); //TODO: hide keyboard
+                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position)); 
                 mAtvAdresses.clearFocus();
                 hideKeyboard(mAtvAdresses);
             }
@@ -145,7 +144,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     private void hideKeyboard(View v) {
         if (v != null) {
             InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
     }
     /** LocationTitleView*/
