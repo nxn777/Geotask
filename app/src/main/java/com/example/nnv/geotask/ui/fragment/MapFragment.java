@@ -238,3 +238,4 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         Snackbar.make(getActivity().findViewById(R.id.main_content), getString(errorId), Snackbar.LENGTH_LONG).show();
     }
 }
+//TODO: remove repeating search after device rotation
