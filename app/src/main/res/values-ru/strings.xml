@@ -10,4 +10,5 @@
     <string name="to">Куда</string>
     <string name="geocoder_error">Ошибка при получении данных geocoder</string>
     <string name="map_not_ready">Google карты не готовы</string>
+    <string name="no_selection">Надо выбрать начальную и конечную точки</string>
 </resources>

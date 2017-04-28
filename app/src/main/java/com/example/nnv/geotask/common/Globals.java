@@ -5,9 +5,6 @@ package com.example.nnv.geotask.common;
  */
 
 public final class Globals {
-    public enum PageType {
-        From, To
-    }
 
     public enum SearchState {
         Searching, Typing
@@ -18,6 +15,8 @@ public final class Globals {
     public static final String TAG = "GEO:";
     public static final int MAP_ZOOM = 10; // 1 - world, 5 - continent, 10 - city, 15 - streets, 20 - buildings
     public static final int DEFAULT_AUTOCOMPLETE_DELAY = 750;
+    public static final String FROM_KEY = "fromkey";
+    public static final String TO_KEY = "tokey";
 
     public static String nullAsString(String str) {
         return (str == null) ? "" : str;

@@ -10,4 +10,5 @@
     <string name="to">To</string>
     <string name="clear_sign" translatable="false">X</string>
     <string name="map_not_ready">Google Map is not ready</string>
+    <string name="no_selection">You should select both From and To addresses</string>
 </resources>
