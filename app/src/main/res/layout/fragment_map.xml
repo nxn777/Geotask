@@ -5,12 +5,43 @@
     android:orientation="vertical"
     tools:context="com.example.nnv.geotask.ui.fragment.MapFragment">
 
-    <AutoCompleteTextView
-        android:id="@+id/autoCompleteTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/address_hint"
-        android:layout_margin="16dp"/>
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.example.nnv.geotask.common.utils.AutoCompleteWOReplacingTV
+            android:id="@+id/autoCompleteTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:inputType="textCapSentences|textNoSuggestions"
+            android:hint="@string/address_hint"
+            android:imeOptions="flagNoExtractUi|actionSearch"/>
+
+        <ProgressBar
+            android:id="@+id/searchProgressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            />
+
+        <Button
+            android:id="@+id/btnClear"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
+            android:background="@android:color/transparent"
+            android:text="@string/clear_sign"
+            android:textAlignment="center"
+
+            android:textColor="@drawable/button_background"
+            android:textSize="18sp" />
+    </FrameLayout>
+
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
