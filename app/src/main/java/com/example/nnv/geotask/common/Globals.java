@@ -1,5 +1,11 @@
 package com.example.nnv.geotask.common;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+
+import static java.lang.Math.round;
+
 /**
  * Created by nnv on 25.04.17.
  */
@@ -36,6 +42,12 @@ public final class Globals {
         }
         result = result + nullAsString(strings[strings.length -1]);
         return result;
+    }
+
+    public static int convertDpToPixel(float dp, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return round(dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }
 

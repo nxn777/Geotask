@@ -1,6 +1,9 @@
 package com.example.nnv.geotask.ui.fragment;
 
 import android.location.Address;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -26,6 +29,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
@@ -33,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by nnv on 02.05.17.
@@ -104,10 +111,30 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
 
     @Override
     public void showRoute(GoogleMap googleMap, String path) {
-        //Log.i(Globals.TAG, "showRoute: " + path);
+        
         List<LatLng> decodedPath = PolyUtil.decode(path);
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLng position : decodedPath) {
+            boundsBuilder.include(position);
+        }
         googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-33.8256, 151.2395), 12));
+        try {
+            googleMap.setMyLocationEnabled(true);
+            LocationManager locationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            String provider = locationManager.getBestProvider(criteria, true);
+            Location location = locationManager.getLastKnownLocation(provider);
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+                LatLng myLatLng = new LatLng(latitude, longitude);
+                boundsBuilder.include(myLatLng);
+                googleMap.addMarker(new MarkerOptions().position(myLatLng).title(getString(R.string.i)));
+            }
+        } catch (SecurityException e) {
+            Log.i(Globals.TAG, "showRoute: no permission to show my location");
+        }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), Globals.convertDpToPixel(16, getContext())));
     }
 
 
