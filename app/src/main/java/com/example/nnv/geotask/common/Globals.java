@@ -17,6 +17,8 @@ public final class Globals {
     public static final int DEFAULT_AUTOCOMPLETE_DELAY = 750;
     public static final String FROM_KEY = "fromkey";
     public static final String TO_KEY = "tokey";
+    public static final String BASE_DIRECTIONS_URL = "https://maps.googleapis.com/maps/api/directions/";
+
 
     public static String nullAsString(String str) {
         return (str == null) ? "" : str;
