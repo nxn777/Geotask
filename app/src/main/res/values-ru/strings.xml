@@ -16,5 +16,5 @@
     <string name="result_io_error">Произошла ошибка сети</string>
     <string name="result_decode_error">Ошибка расшифровки ответа</string>
     <string name="result_title">Маршрут</string>
-    <string name="i">Я здесь</string>
+    <string name="i">Вы здесь</string>
 </resources>

@@ -168,3 +168,4 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
         findRoute(mFromAddr, mToAddr);
     }
 }
+//TODO: redesign - make map fullscreen, other controls place above it
