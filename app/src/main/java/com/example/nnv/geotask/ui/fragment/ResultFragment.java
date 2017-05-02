@@ -111,7 +111,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
 
     @Override
     public void showRoute(GoogleMap googleMap, String path) {
-        
+
         List<LatLng> decodedPath = PolyUtil.decode(path);
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
         for (LatLng position : decodedPath) {
