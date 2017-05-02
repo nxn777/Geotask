@@ -2,6 +2,10 @@ package com.example.nnv.geotask.presentation.presenter;
 
 import android.content.Context;
 import android.location.Address;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
@@ -24,6 +28,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 
 /**
  * Created by nnv on 25.04.17.
@@ -34,6 +40,7 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
     private Context mCtx;
     private GoogleMap mGoogleMap;
     private Address mFromAddr, mToAddr;
+    private volatile Location myLocation;
 
     public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
@@ -41,6 +48,47 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 .baseUrl(Globals.BASE_DIRECTIONS_URL)
                 .build();
         mDirService = retrofit.create(DirectionsService.class);
+        myLocation = null;
+        updateMyLocation();
+    }
+
+    private void updateMyLocation() {
+        try {
+            LocationManager locationManager = (LocationManager) mCtx.getSystemService(LOCATION_SERVICE);
+            locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    if (myLocation == null) { //GPS has not yet set this iVar
+                        myLocation = location;
+                        Log.i(Globals.TAG, "onLocationChanged: NETWORK_PROVIDER " + myLocation.toString());
+                    }
+                }
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                @Override
+                public void onProviderEnabled(String provider) {}
+                @Override
+                public void onProviderDisabled(String provider) {}
+            }, null);
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    if (location == null) { return; }
+                    myLocation = location; //We always accept GPS location
+                    Log.i(Globals.TAG, "onLocationChanged: GPS_PROVIDER " + myLocation.toString());
+                }
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {}
+                @Override
+                public void onProviderEnabled(String provider) {}
+                @Override
+                public void onProviderDisabled(String provider) {}
+            }, null);
+        } catch (SecurityException e) {
+            Log.i(Globals.TAG, "ResultPresenter: no permission to show my location");
+        } catch (IllegalArgumentException e) {
+            Log.i(Globals.TAG, "ResultPresenter: no location providers to show my location");
+        }
     }
 
     private String getLatLngAsString(Address addr) {
@@ -90,7 +138,7 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                             return;
                         }
                         getViewState().toggleUI(Globals.ResultState.Found);
-                        getViewState().showRoute(mGoogleMap, path);
+                        getViewState().showRoute(mGoogleMap, path, myLocation);
                     } else {
                         getViewState().showError(mCtx.getString(R.string.map_not_ready));
                     }

@@ -1,5 +1,7 @@
 package com.example.nnv.geotask.presentation.view;
 
+import android.location.Location;
+
 import com.arellomobile.mvp.MvpView;
 import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
@@ -13,5 +15,5 @@ import com.google.android.gms.maps.GoogleMap;
 public interface ResultView extends MvpView{
     void toggleUI(Globals.ResultState state);
     void showError(String error);
-    void showRoute(GoogleMap googleMap, String path);
+    void showRoute(GoogleMap googleMap, String path, Location myLocation);
 }

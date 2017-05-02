@@ -110,31 +110,22 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
     }
 
     @Override
-    public void showRoute(GoogleMap googleMap, String path) {
-
+    public void showRoute(GoogleMap googleMap, String path, Location myLocation) {
         List<LatLng> decodedPath = PolyUtil.decode(path);
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
         for (LatLng position : decodedPath) {
             boundsBuilder.include(position);
         }
-        googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
-        try {
-            googleMap.setMyLocationEnabled(true);
-            LocationManager locationManager = (LocationManager) getContext().getSystemService(LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            String provider = locationManager.getBestProvider(criteria, true);
-            Location location = locationManager.getLastKnownLocation(provider);
-            if (location != null) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
-                LatLng myLatLng = new LatLng(latitude, longitude);
-                boundsBuilder.include(myLatLng);
-                googleMap.addMarker(new MarkerOptions().position(myLatLng).title(getString(R.string.i)));
-            }
-        } catch (SecurityException e) {
-            Log.i(Globals.TAG, "showRoute: no permission to show my location");
+        if (myLocation != null) {
+            LatLng myLatLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+            googleMap.addMarker(new MarkerOptions().position(myLatLng).title(getString(R.string.i)));
+            boundsBuilder.include(myLatLng);
+        } else {
+            Log.i(Globals.TAG, "showRoute: got null myLocation");
         }
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), Globals.convertDpToPixel(16, getContext())));
+        googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
+                Globals.convertDpToPixel(16, getContext())));
     }
 
 
