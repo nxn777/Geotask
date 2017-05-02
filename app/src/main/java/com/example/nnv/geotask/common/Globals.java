@@ -10,6 +10,10 @@ public final class Globals {
         Searching, Typing
     }
 
+    public enum ResultState {
+        Searching, Found, NotFound
+    }
+
     public static final int MAX_RESULTS = 7;
     public static final int SEARCH_THRESHOLD = 3;
     public static final String TAG = "GEO:";

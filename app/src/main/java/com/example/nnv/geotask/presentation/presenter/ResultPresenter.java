@@ -9,6 +9,10 @@ import com.example.nnv.geotask.R;
 import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.utils.DirectionsService;
 import com.example.nnv.geotask.presentation.view.ResultView;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.HashMap;
 
@@ -22,9 +26,10 @@ import retrofit2.Retrofit;
  * Created by nnv on 25.04.17.
  */
 @InjectViewState
-public class ResultPresenter extends MvpPresenter<ResultView>{
+public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapReadyCallback{
     private DirectionsService mDirService;
     private Context mCtx;
+    private GoogleMap mGoogleMap;
 
     public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
@@ -39,7 +44,11 @@ public class ResultPresenter extends MvpPresenter<ResultView>{
                 String.valueOf(addr.getLongitude());
     }
 
-
+    private String getPath(String body) {
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(body).getAsJsonObject();
+        return obj.getAsJsonObject("overview_polyline").get("points").getAsString();
+    }
 
     public void findRoute(Address fromAddr, Address toAddr) {
         HashMap<String, String> params = new HashMap<>();
@@ -47,19 +56,29 @@ public class ResultPresenter extends MvpPresenter<ResultView>{
         params.put("destination", getLatLngAsString(toAddr));
         params.put("key", mCtx.getString(R.string.api_key));
         Call<String> dirCall = mDirService.obtainDirections(params);
-        getViewState().toggleSearching(true);
+        getViewState().toggleUI(Globals.ResultState.Searching);
         dirCall.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                getViewState().toggleSearching(false);
+                getViewState().toggleUI(Globals.ResultState.Found); //TODO: maybe not
+                if (mGoogleMap != null) {
+                    getViewState().showRoute(mGoogleMap, getPath(response.body()));
+                } else {
+                    getViewState().showError(mCtx.getString(R.string.map_not_ready));
+                }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                getViewState().toggleSearching(false);
+                getViewState().toggleUI(Globals.ResultState.NotFound);
                 getViewState().showError(t.getLocalizedMessage());
             }
         });
     }
 
+    /** OnMapReadyCallback*/
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.mGoogleMap = googleMap;
+    }
 }
