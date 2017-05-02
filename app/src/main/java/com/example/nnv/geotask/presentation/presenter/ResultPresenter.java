@@ -2,6 +2,7 @@ package com.example.nnv.geotask.presentation.presenter;
 
 import android.content.Context;
 import android.location.Address;
+import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -14,8 +15,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,32 +48,60 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 String.valueOf(addr.getLongitude());
     }
 
+    //micro parser
     private String getPath(String body) {
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(body).getAsJsonObject();
+            return obj.getAsJsonArray("routes").get(0).getAsJsonObject()
+                    .getAsJsonObject("overview_polyline").get("points").getAsString();
+        } catch (NullPointerException e) {
+            return "";
+        } catch (IndexOutOfBoundsException e) {
+            return "";
+        }
+    }
+    private boolean isRouteFound(String body) {
         JsonParser parser = new JsonParser();
         JsonObject obj = parser.parse(body).getAsJsonObject();
-        return obj.getAsJsonObject("overview_polyline").get("points").getAsString();
+        return obj.get("status").getAsString().equals("OK");
     }
 
-    public void findRoute(Address fromAddr, Address toAddr) {
+    private void findRoute(Address fromAddr, Address toAddr) {
         HashMap<String, String> params = new HashMap<>();
         params.put("origin", getLatLngAsString(fromAddr));
         params.put("destination", getLatLngAsString(toAddr));
         params.put("key", mCtx.getString(R.string.api_key));
-        Call<String> dirCall = mDirService.obtainDirections(params);
+        Call<ResponseBody> dirCall = mDirService.obtainDirections(params);
         getViewState().toggleUI(Globals.ResultState.Searching);
-        dirCall.enqueue(new Callback<String>() {
+        dirCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                getViewState().toggleUI(Globals.ResultState.Found); //TODO: maybe not
-                if (mGoogleMap != null) {
-                    getViewState().showRoute(mGoogleMap, getPath(response.body()));
-                } else {
-                    getViewState().showError(mCtx.getString(R.string.map_not_ready));
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    String body = response.body().string();
+                    if (!isRouteFound(body)) {
+                        getViewState().toggleUI(Globals.ResultState.NotFound);
+                        return;
+                    }
+                    if (mGoogleMap != null ) {
+                        String path = getPath(body);
+                        if (path.equals("")) {
+                            getViewState().showError(mCtx.getString(R.string.result_decode_error));
+                            return;
+                        }
+                        getViewState().toggleUI(Globals.ResultState.Found);
+                        getViewState().showRoute(mGoogleMap, path);
+                    } else {
+                        getViewState().showError(mCtx.getString(R.string.map_not_ready));
+                    }
+                } catch (IOException e) {
+                    Log.i(Globals.TAG, "onResponse: io error");
+                    getViewState().showError(mCtx.getString(R.string.result_io_error));
                 }
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 getViewState().toggleUI(Globals.ResultState.NotFound);
                 getViewState().showError(t.getLocalizedMessage());
             }

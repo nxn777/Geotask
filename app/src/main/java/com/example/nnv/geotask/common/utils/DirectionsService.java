@@ -2,6 +2,7 @@ package com.example.nnv.geotask.common.utils;
 
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
@@ -12,5 +13,5 @@ import retrofit2.http.QueryMap;
 
 public interface DirectionsService {
     @GET("json")
-    Call<String>obtainDirections(@QueryMap Map<String, String> params);
+    Call<ResponseBody>obtainDirections(@QueryMap Map<String, String> params);
 }

@@ -3,7 +3,6 @@
     <string name="app_name">Geotask</string>
     <string name="action_settings">Настройки</string>
     <string name="address_hint">Начните вводить адрес...</string>
-    <string name="section_format">Оппа: %1$d</string>
     <string name="geocoder_absent">"                        .setAction(\"Action\", null).show();"</string>
     <string name="coords">Широта: %1$f, Долгота: %2$f</string>
     <string name="from">Откуда</string>
@@ -14,4 +13,6 @@
     <string name="result_found">Маршрут найден</string>
     <string name="result_notfound">Маршрут не найден</string>
     <string name="result_searching">Идет поиск</string>
+    <string name="result_io_error">Произошла ошибка сети</string>
+    <string name="result_decode_error">Ошибка расшифровки ответа</string>
 </resources>

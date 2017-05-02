@@ -64,7 +64,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         this.mProgressbar = (ProgressBar) view.findViewById(R.id.resultProgressBar);
         this.mTvStatus = (TextView) view.findViewById(R.id.resultTextView);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.mapFragment);
+                .findFragmentById(R.id.mapResultFragment);
         toggleUI(Globals.ResultState.Searching); //TODO: add initializing state
         Bundle params = getArguments();
         mResultPresenter.setAddresses((Address) params.getParcelable(Globals.FROM_KEY),
