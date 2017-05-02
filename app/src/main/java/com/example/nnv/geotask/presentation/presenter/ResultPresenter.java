@@ -30,6 +30,7 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
     private DirectionsService mDirService;
     private Context mCtx;
     private GoogleMap mGoogleMap;
+    private Address mFromAddr, mToAddr;
 
     public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
@@ -76,9 +77,15 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
         });
     }
 
+    public void setAddresses(Address fromAddr, Address toAddr) {
+        this.mFromAddr = fromAddr;
+        this.mToAddr = toAddr;
+    }
+
     /** OnMapReadyCallback*/
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.mGoogleMap = googleMap;
+        findRoute(mFromAddr, mToAddr);
     }
 }

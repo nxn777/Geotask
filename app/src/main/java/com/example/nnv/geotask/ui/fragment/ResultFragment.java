@@ -37,6 +37,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
     private ProgressBar mProgressbar;
     private TextView mTvStatus;
 
+
     @InjectPresenter
     ResultPresenter mResultPresenter;
 
@@ -52,11 +53,6 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_result, container, false);
@@ -69,6 +65,10 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         this.mTvStatus = (TextView) view.findViewById(R.id.resultTextView);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mapFragment);
+        toggleUI(Globals.ResultState.Searching); //TODO: add initializing state
+        Bundle params = getArguments();
+        mResultPresenter.setAddresses((Address) params.getParcelable(Globals.FROM_KEY),
+                (Address) params.getParcelable(Globals.TO_KEY));
         mapFragment.getMapAsync(mResultPresenter);
     }
 
@@ -99,7 +99,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
 
     @Override
     public void showRoute(GoogleMap googleMap, String path) {
-
+        Log.i(Globals.TAG, "showRoute: " + path);
     }
 
 
