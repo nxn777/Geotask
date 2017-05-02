@@ -50,8 +50,6 @@ import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 
 public class MapFragment extends MvpAppCompatFragment implements LocationTitleView, AddressMapView {
-    private static final String TYPE_PARAM = "type";
-    private Globals.PageType mPageType;
     private AutoCompleteWOReplacingTV mAtvAdresses;
     private Button mClearBtn;
     private ProgressBar mProgressBar;
@@ -74,20 +72,9 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
 
     }
 
-    public static MapFragment newInstance(Globals.PageType pageType) {
-        MapFragment fragment = new MapFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(TYPE_PARAM, pageType);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mPageType = (Globals.PageType) getArguments().getSerializable(TYPE_PARAM);
-        }
         mAdapter = new LocationAdapter<>(getContext(), R.layout.location_item, new ArrayList<Address>());
         mJustShowOnce = false;
     }
@@ -170,6 +157,11 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             }
         });
         mTitlePresenter.getLocationList();
+    }
+    /** Aux */
+
+    public Address selectedAddress() {
+        return mTitlePresenter.getSelectedAddress();
     }
 
     private void hideKeyboard(View v) {
