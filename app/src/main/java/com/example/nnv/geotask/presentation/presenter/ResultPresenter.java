@@ -26,7 +26,7 @@ public class ResultPresenter extends MvpPresenter<ResultView>{
     private DirectionsService mDirService;
     private Context mCtx;
 
-    ResultPresenter(Context context) {
+    public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Globals.BASE_DIRECTIONS_URL)

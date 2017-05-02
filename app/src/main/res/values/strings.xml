@@ -12,4 +12,8 @@
     <string name="map_not_ready">Google Map is not ready</string>
     <string name="no_selection">You should select both From and To addresses</string>
     <string name="api_key" translatable="false">AIzaSyBJqbsw9NZklHOQDJ2eo3XdkPKhTct1LLo</string>
+    <string name="result_searching">Searching</string>
+    <string name="result_found">Route found</string>
+    <string name="result_notfound">Route not found</string>
+
 </resources>
