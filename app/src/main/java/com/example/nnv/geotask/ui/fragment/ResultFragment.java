@@ -22,10 +22,15 @@ import com.example.nnv.geotask.common.Globals;
 import com.example.nnv.geotask.common.utils.LocationAdapter;
 import com.example.nnv.geotask.presentation.presenter.ResultPresenter;
 import com.example.nnv.geotask.presentation.view.ResultView;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -99,7 +104,10 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
 
     @Override
     public void showRoute(GoogleMap googleMap, String path) {
-        Log.i(Globals.TAG, "showRoute: " + path);
+        //Log.i(Globals.TAG, "showRoute: " + path);
+        List<LatLng> decodedPath = PolyUtil.decode(path);
+        googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-33.8256, 151.2395), 12));
     }
 
 

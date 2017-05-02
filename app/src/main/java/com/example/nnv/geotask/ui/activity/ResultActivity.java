@@ -15,6 +15,7 @@ public class ResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+        setTitle(getString(R.string.result_title));
         Intent incoming = getIntent();
         Address fromAddr = incoming.getParcelableExtra(Globals.FROM_KEY);
         Address toAddr = incoming.getParcelableExtra(Globals.TO_KEY);
