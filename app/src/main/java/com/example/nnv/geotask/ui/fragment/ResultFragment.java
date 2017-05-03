@@ -5,6 +5,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
@@ -118,10 +119,10 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
     }
 
     @Override
-    public void showRoute(GoogleMap googleMap, String path, Location myLocation) {
-        List<LatLng> decodedPath = PolyUtil.decode(path);
+    public void showRoute(GoogleMap googleMap, List<LatLng> path, Location myLocation) {
+        //
         LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-        for (LatLng position : decodedPath) {
+        for (LatLng position : path) {
             boundsBuilder.include(position);
         }
         if (myLocation != null) {
@@ -131,10 +132,21 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         } else {
             Log.i(Globals.TAG, "showRoute: got null myLocation");
         }
-        googleMap.addPolyline(new PolylineOptions().addAll(decodedPath));
+        googleMap.addPolyline(new PolylineOptions().addAll(path));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
                 Globals.convertDpToPixel(16, getContext())));
     }
 
-
+    @Override
+    public void updateMapWithMylocation(GoogleMap googleMap, List<LatLng> path, @NonNull Location myLocation) {
+        LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+        for (LatLng position : path) {
+            boundsBuilder.include(position);
+        }
+        LatLng myLatLng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(myLatLng).title(getString(R.string.i)));
+        boundsBuilder.include(myLatLng);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(),
+                Globals.convertDpToPixel(16, getContext())));
+    }
 }

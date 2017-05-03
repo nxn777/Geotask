@@ -16,11 +16,15 @@ import com.example.nnv.geotask.common.utils.DirectionsService;
 import com.example.nnv.geotask.presentation.view.ResultView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.maps.android.PolyUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -41,6 +45,7 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
     private GoogleMap mGoogleMap;
     private Address mFromAddr, mToAddr;
     private volatile Location myLocation;
+    private volatile List<LatLng> mDecodedPath;
 
     public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
@@ -49,6 +54,7 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 .build();
         mDirService = retrofit.create(DirectionsService.class);
         myLocation = null;
+        mDecodedPath = new LinkedList<>();
         updateMyLocation();
     }
 
@@ -60,6 +66,9 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 public void onLocationChanged(Location location) {
                     if (myLocation == null) { //GPS has not yet set this iVar
                         myLocation = location;
+                        if (!mDecodedPath.isEmpty()) { //No need to show location before we find a route
+                            getViewState().updateMapWithMylocation(mGoogleMap, mDecodedPath, myLocation);
+                        }
                         Log.i(Globals.TAG, "onLocationChanged: NETWORK_PROVIDER " + myLocation.toString());
                     }
                 }
@@ -75,6 +84,9 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 public void onLocationChanged(Location location) {
                     if (location == null) { return; }
                     myLocation = location; //We always accept GPS location
+                    if (!mDecodedPath.isEmpty()) { //No need to show location before we find a route
+                        getViewState().updateMapWithMylocation(mGoogleMap, mDecodedPath, myLocation);
+                    }
                     Log.i(Globals.TAG, "onLocationChanged: GPS_PROVIDER " + myLocation.toString());
                 }
                 @Override
@@ -127,18 +139,19 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     String body = response.body().string();
+                    String path = getPath(body);
+                    if (path.equals("")) {
+                        getViewState().showError(mCtx.getString(R.string.result_decode_error));
+                        return;
+                    }
+                    mDecodedPath = PolyUtil.decode(path);
                     if (!isRouteFound(body)) {
                         getViewState().toggleUI(Globals.ResultState.NotFound);
                         return;
                     }
                     if (mGoogleMap != null ) {
-                        String path = getPath(body);
-                        if (path.equals("")) {
-                            getViewState().showError(mCtx.getString(R.string.result_decode_error));
-                            return;
-                        }
                         getViewState().toggleUI(Globals.ResultState.Found);
-                        getViewState().showRoute(mGoogleMap, path, myLocation);
+                        getViewState().showRoute(mGoogleMap, mDecodedPath, myLocation);
                     } else {
                         getViewState().showError(mCtx.getString(R.string.map_not_ready));
                     }
@@ -168,4 +181,3 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
         findRoute(mFromAddr, mToAddr);
     }
 }
-//TODO: redesign - make map fullscreen, other controls place above it
