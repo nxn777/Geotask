@@ -6,33 +6,30 @@ import android.location.Address;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.example.nnv.geotask.R;
-import com.example.nnv.geotask.common.Globals;
 
 import java.util.ArrayList;
 
 import static com.example.nnv.geotask.common.Globals.concatNullableStrings;
-import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 /**
  * Created by nnv on 27.04.17.
+ * Adapter for dropdown list of hints for AutoCompleteTextView
  */
 
 public class LocationAdapter<T> extends BaseAdapter implements Filterable{
-    private LayoutInflater mLayoutInflater;
+    private final LayoutInflater mLayoutInflater;
     private ArrayList<T> mItems;
-    private Context mCtx;
-    private int mLayout;
+    private final Context mCtx;
+    private final int mLayout;
 
     @Override
     public int getCount() {
@@ -98,8 +95,7 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
                     ((Address)item).getLatitude(),
                     ((Address)item).getLongitude()));
         }
-        convertView.setBackgroundColor((position % 2 == 0) ?  Color.LTGRAY : Color.WHITE);
-        //Log.i(Globals.TAG, "getView: "+position+" " + item.toString() + "\n");
+        convertView.setBackgroundColor((position % 2 == 0) ?  Color.alpha(240) : Color.WHITE);
         return convertView;
     }
 

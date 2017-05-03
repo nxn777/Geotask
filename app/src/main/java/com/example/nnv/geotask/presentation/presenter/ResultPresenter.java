@@ -16,11 +16,16 @@ import com.example.nnv.geotask.common.utils.DirectionsService;
 import com.example.nnv.geotask.presentation.view.ResultView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.maps.android.PolyUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -33,14 +38,16 @@ import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by nnv on 25.04.17.
+ * Moxy presenter for ResultView - GoogleMaps and Status result screen
  */
 @InjectViewState
 public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapReadyCallback{
-    private DirectionsService mDirService;
-    private Context mCtx;
+    private final DirectionsService mDirService;
+    private final Context mCtx;
     private GoogleMap mGoogleMap;
     private Address mFromAddr, mToAddr;
-    private volatile Location myLocation;
+    private volatile Location myLocation; //can be probably accessed from different threads
+    private volatile List<LatLng> mDecodedPath; //can be probably accessed from different threads
 
     public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
@@ -49,9 +56,18 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 .build();
         mDirService = retrofit.create(DirectionsService.class);
         myLocation = null;
+        mDecodedPath = new LinkedList<>();
         updateMyLocation();
     }
 
+    /**
+     * Updates phone's location single time
+     * Uses Network and GPS providers
+     * GPS provider results have higher priority.
+     * If route path already exists, the method updates google map bounds and location marker
+     * with new ones.
+     * Does nothing if no geolocation permissions are given
+     */
     private void updateMyLocation() {
         try {
             LocationManager locationManager = (LocationManager) mCtx.getSystemService(LOCATION_SERVICE);
@@ -60,6 +76,9 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 public void onLocationChanged(Location location) {
                     if (myLocation == null) { //GPS has not yet set this iVar
                         myLocation = location;
+                        if (!mDecodedPath.isEmpty()) { //No need to show location before we find a route
+                            getViewState().updateMapWithMylocation(mGoogleMap, mDecodedPath, myLocation);
+                        }
                         Log.i(Globals.TAG, "onLocationChanged: NETWORK_PROVIDER " + myLocation.toString());
                     }
                 }
@@ -75,6 +94,9 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 public void onLocationChanged(Location location) {
                     if (location == null) { return; }
                     myLocation = location; //We always accept GPS location
+                    if (!mDecodedPath.isEmpty()) { //No need to show location before we find a route
+                        getViewState().updateMapWithMylocation(mGoogleMap, mDecodedPath, myLocation);
+                    }
                     Log.i(Globals.TAG, "onLocationChanged: GPS_PROVIDER " + myLocation.toString());
                 }
                 @Override
@@ -96,7 +118,13 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 String.valueOf(addr.getLongitude());
     }
 
-    //micro parser
+    /**
+     * Micro parser
+     * Searches for routes[0].overview_polyline.points field
+     * in json response of google directions api
+     * @param body json response
+     * @return String containing value of "points" field. Empty if not found
+     */
     private String getPath(String body) {
         try {
             JsonParser parser = new JsonParser();
@@ -107,14 +135,40 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
             return "";
         } catch (IndexOutOfBoundsException e) {
             return "";
+        } catch (IllegalStateException e) {
+            return "";
+        } catch (JsonParseException e2) {
+            return "";
         }
     }
+
+    /**
+     * Micro parser
+     * Checks, if json contains field "status" and it equals "OK" - it means that route exists
+     * Returns true if it so, false otherwise.
+     * @param body Json response of google directions api
+     * @return boolean
+     */
     private boolean isRouteFound(String body) {
-        JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(body).getAsJsonObject();
-        return obj.get("status").getAsString().equals("OK");
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(body).getAsJsonObject();
+            return obj.get("status").getAsString().equals("OK");
+        } catch (NullPointerException e) {
+            return false;
+        } catch (IllegalStateException e) {
+            return false;
+        } catch (JsonParseException e2) {
+            return false;
+        }
     }
 
+    /**
+     * Searches route between addresses - performs async call to google directions api.
+     * Updates UI accordingly
+     * @param fromAddr starting Address
+     * @param toAddr target Address
+     */
     private void findRoute(Address fromAddr, Address toAddr) {
         HashMap<String, String> params = new HashMap<>();
         params.put("origin", getLatLngAsString(fromAddr));
@@ -127,18 +181,20 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     String body = response.body().string();
+                    String path = getPath(body);
+                    if (path.equals("")) {
+                        getViewState().showError(mCtx.getString(R.string.result_decode_error));
+                        getViewState().toggleUI(Globals.ResultState.NotFound);
+                        return;
+                    }
+                    mDecodedPath = PolyUtil.decode(path);
                     if (!isRouteFound(body)) {
                         getViewState().toggleUI(Globals.ResultState.NotFound);
                         return;
                     }
                     if (mGoogleMap != null ) {
-                        String path = getPath(body);
-                        if (path.equals("")) {
-                            getViewState().showError(mCtx.getString(R.string.result_decode_error));
-                            return;
-                        }
                         getViewState().toggleUI(Globals.ResultState.Found);
-                        getViewState().showRoute(mGoogleMap, path, myLocation);
+                        getViewState().showRoute(mGoogleMap, mDecodedPath, myLocation);
                     } else {
                         getViewState().showError(mCtx.getString(R.string.map_not_ready));
                     }
@@ -168,4 +224,3 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
         findRoute(mFromAddr, mToAddr);
     }
 }
-//TODO: redesign - make map fullscreen, other controls place above it
