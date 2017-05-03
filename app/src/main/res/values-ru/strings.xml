@@ -14,7 +14,7 @@
     <string name="result_notfound">Маршрут не найден</string>
     <string name="result_searching">Идет поиск</string>
     <string name="result_io_error">Произошла ошибка сети</string>
-    <string name="result_decode_error">Ошибка расшифровки ответа</string>
+    <string name="result_decode_error">Ошибка ответа или маршрут не найден</string>
     <string name="result_title">Маршрут</string>
     <string name="i">Вы здесь</string>
 </resources>

@@ -15,7 +15,7 @@
     <string name="result_found">Route found</string>
     <string name="result_notfound">Route not found</string>
     <string name="result_io_error">IO error occured</string>
-    <string name="result_decode_error">Decoding error</string>
+    <string name="result_decode_error">Decoding error or no route</string>
     <string name="result_title">Route</string>
     <string name="i">You are here</string>
 </resources>

@@ -142,6 +142,7 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                     String path = getPath(body);
                     if (path.equals("")) {
                         getViewState().showError(mCtx.getString(R.string.result_decode_error));
+                        getViewState().toggleUI(Globals.ResultState.NotFound);
                         return;
                     }
                     mDecodedPath = PolyUtil.decode(path);
