@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -50,7 +51,7 @@ import static android.content.Context.LOCATION_SERVICE;
 public class ResultFragment extends MvpAppCompatFragment implements ResultView {
     private ProgressBar mProgressbar;
     private TextView mTvStatus;
-
+    private FrameLayout mFrame;
 
     @InjectPresenter
     ResultPresenter mResultPresenter;
@@ -77,6 +78,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         super.onViewCreated(view, savedInstanceState);
         this.mProgressbar = (ProgressBar) view.findViewById(R.id.resultProgressBar);
         this.mTvStatus = (TextView) view.findViewById(R.id.resultTextView);
+        this.mFrame = (FrameLayout) view.findViewById(R.id.resultFrame);
         final LinearLayout llStatus = (LinearLayout) view.findViewById(R.id.resultStatus);
         llStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +88,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         });
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mapResultFragment);
-        toggleUI(Globals.ResultState.Searching); //TODO: add initializing state
+        toggleUI(Globals.ResultState.Searching);
         Bundle params = getArguments();
         mResultPresenter.setAddresses((Address) params.getParcelable(Globals.FROM_KEY),
                 (Address) params.getParcelable(Globals.TO_KEY));
@@ -115,7 +117,9 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
 
     @Override
     public void showError(String error) {
-        Snackbar.make(getActivity().findViewById(R.id.main_content), error, Snackbar.LENGTH_LONG).show();
+        if (mFrame != null) {
+            Snackbar.make(mFrame, error, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     @Override
