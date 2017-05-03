@@ -3,23 +3,17 @@ package com.example.nnv.geotask.ui.fragment;
 import android.content.Context;
 import android.location.Address;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -32,11 +26,8 @@ import com.example.nnv.geotask.presentation.presenter.LocationTitlePresenter;
 import com.example.nnv.geotask.presentation.presenter.MapPresenter;
 import com.example.nnv.geotask.presentation.view.AddressMapView;
 import com.example.nnv.geotask.presentation.view.LocationTitleView;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -46,7 +37,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.example.nnv.geotask.common.Globals.concatNullableStrings;
-import static com.example.nnv.geotask.common.Globals.nullAsString;
 
 
 public class MapFragment extends MvpAppCompatFragment implements LocationTitleView, AddressMapView {
@@ -54,7 +44,8 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
     private Button mClearBtn;
     private ProgressBar mProgressBar;
     private LocationAdapter<Address> mAdapter;
-
+    //flag, if true - one text update in mArvAddresses will not cause query to Geocoder,
+    //sets to false immediately after one text change
     private boolean mJustShowOnce;
     @InjectPresenter
     LocationTitlePresenter mTitlePresenter;
@@ -66,7 +57,7 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         return new LocationTitlePresenter(getContext());
     }
 
-    /** LifeCycle */
+    // LifeCycle
 
     public MapFragment() {
 
@@ -84,58 +75,6 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
-
-
-    private void initACTV() {
-        mAtvAdresses.setAdapter(mAdapter);
-        mAtvAdresses.addTextChangedListener(new TextWatcher() {
-            private Timer timer;
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                if (mJustShowOnce) {
-                    mJustShowOnce = false;
-                    return;
-                }
-                Log.i(Globals.TAG, "afterTextChanged: "+s.toString());
-                if (timer != null) {
-                    timer.cancel();
-                    timer = null;
-                }
-                timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        Log.i(Globals.TAG, "delayed afterTextChanged: "+s.toString());
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mTitlePresenter.loadLocations(s.toString());
-                            }
-                        });
-
-                    }
-
-                }, Globals.DEFAULT_AUTOCOMPLETE_DELAY);
-            }
-        });
-        mAtvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
-        mAtvAdresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position));
-                //mAtvAdresses.clearFocus();
-                hideKeyboard(mAtvAdresses);
-            }
-        });
-    }
-
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -158,10 +97,58 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         });
         mTitlePresenter.getLocationList();
     }
-    /** Aux */
+
+    // Aux
 
     public Address selectedAddress() {
         return mTitlePresenter.getSelectedAddress();
+    }
+
+    private void initACTV() {
+        mAtvAdresses.setAdapter(mAdapter);
+        mAtvAdresses.addTextChangedListener(new TextWatcher() {
+            private Timer timer;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+                if (mJustShowOnce) {
+                    mJustShowOnce = false;
+                    return;
+                }
+                if (timer != null) {
+                    timer.cancel();
+                    timer = null;
+                }
+                timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mTitlePresenter.loadLocations(s.toString());
+                            }
+                        });
+
+                    }
+
+                }, Globals.DEFAULT_AUTOCOMPLETE_DELAY);
+            }
+        });
+        mAtvAdresses.setThreshold(Globals.SEARCH_THRESHOLD);
+        mAtvAdresses.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mTitlePresenter.setSelectedAddress((Address) parent.getItemAtPosition(position));
+                hideKeyboard(mAtvAdresses);
+            }
+        });
     }
 
     private void hideKeyboard(View v) {
@@ -170,7 +157,8 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
         }
     }
-    /** LocationTitleView*/
+
+    // Implementation of LocationTitleView
 
     @Override
     public void updateLocationList(ArrayList<Address> addressList) {
@@ -209,10 +197,10 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         }
     }
 
-    /** AddressMapView */
+    // Implementation of AddressMapView
+
     @Override
     public void showAddressOnMap(Address address, GoogleMap googleMap) {
-        Log.i(Globals.TAG, "showAddressOnMap: ");
         String title = concatNullableStrings(", ", address.getAdminArea(),
                 address.getAddressLine(0));
         LatLng addressLoc = new LatLng(address.getLatitude(), address.getLongitude());
@@ -230,4 +218,3 @@ public class MapFragment extends MvpAppCompatFragment implements LocationTitleVi
         Snackbar.make(getActivity().findViewById(R.id.main_content), getString(errorId), Snackbar.LENGTH_LONG).show();
     }
 }
-//TODO: remove repeating search after device rotation

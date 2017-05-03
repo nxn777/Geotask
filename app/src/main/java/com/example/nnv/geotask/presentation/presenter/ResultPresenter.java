@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.maps.android.PolyUtil;
 
@@ -37,15 +38,16 @@ import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by nnv on 25.04.17.
+ * Moxy presenter for ResultView - GoogleMaps and Status result screen
  */
 @InjectViewState
 public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapReadyCallback{
-    private DirectionsService mDirService;
-    private Context mCtx;
+    private final DirectionsService mDirService;
+    private final Context mCtx;
     private GoogleMap mGoogleMap;
     private Address mFromAddr, mToAddr;
-    private volatile Location myLocation;
-    private volatile List<LatLng> mDecodedPath;
+    private volatile Location myLocation; //can be probably accessed from different threads
+    private volatile List<LatLng> mDecodedPath; //can be probably accessed from different threads
 
     public ResultPresenter(Context context) {
         this.mCtx = context.getApplicationContext();
@@ -58,6 +60,14 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
         updateMyLocation();
     }
 
+    /**
+     * Updates phone's location single time
+     * Uses Network and GPS providers
+     * GPS provider results have higher priority.
+     * If route path already exists, the method updates google map bounds and location marker
+     * with new ones.
+     * Does nothing if no geolocation permissions are given
+     */
     private void updateMyLocation() {
         try {
             LocationManager locationManager = (LocationManager) mCtx.getSystemService(LOCATION_SERVICE);
@@ -108,7 +118,13 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
                 String.valueOf(addr.getLongitude());
     }
 
-    //micro parser
+    /**
+     * Micro parser
+     * Searches for routes[0].overview_polyline.points field
+     * in json response of google directions api
+     * @param body json response
+     * @return String containing value of "points" field. Empty if not found
+     */
     private String getPath(String body) {
         try {
             JsonParser parser = new JsonParser();
@@ -119,14 +135,40 @@ public class ResultPresenter extends MvpPresenter<ResultView> implements OnMapRe
             return "";
         } catch (IndexOutOfBoundsException e) {
             return "";
+        } catch (IllegalStateException e) {
+            return "";
+        } catch (JsonParseException e2) {
+            return "";
         }
     }
+
+    /**
+     * Micro parser
+     * Checks, if json contains field "status" and it equals "OK" - it means that route exists
+     * Returns true if it so, false otherwise.
+     * @param body Json response of google directions api
+     * @return boolean
+     */
     private boolean isRouteFound(String body) {
-        JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(body).getAsJsonObject();
-        return obj.get("status").getAsString().equals("OK");
+        try {
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(body).getAsJsonObject();
+            return obj.get("status").getAsString().equals("OK");
+        } catch (NullPointerException e) {
+            return false;
+        } catch (IllegalStateException e) {
+            return false;
+        } catch (JsonParseException e2) {
+            return false;
+        }
     }
 
+    /**
+     * Searches route between addresses - performs async call to google directions api.
+     * Updates UI accordingly
+     * @param fromAddr starting Address
+     * @param toAddr target Address
+     */
     private void findRoute(Address fromAddr, Address toAddr) {
         HashMap<String, String> params = new HashMap<>();
         params.put("origin", getLatLngAsString(fromAddr));

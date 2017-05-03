@@ -16,18 +16,21 @@ import java.util.Locale;
 
 /**
  * Created by nnv on 25.04.17.
+ * AsyncTask for performing Geocoder call(obtaining Addresses by their description)
  */
 
 public class LocationAddressesLoader extends AsyncTask<String, Void, ArrayList<Address>> {
-
+    /**
+     * interface for interacting with this loader
+     */
     public interface LoaderDelegate {
         void onLoaderReady(ArrayList<Address> resultList);
         void onError(String errorDescription);
     }
 
-    private Geocoder mGeoCoder;
-    private LoaderDelegate delegate;
-    private Context mCtx;
+    private final Geocoder mGeoCoder;
+    private final LoaderDelegate delegate;
+    private final Context mCtx;
 
     public LocationAddressesLoader(Context ctx, LoaderDelegate delegate) {
         super();

@@ -14,8 +14,7 @@
     <FrameLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@drawable/shadow"
-        android:id="@+id/actvContainer">
+        android:background="@drawable/shadow">
         <com.example.nnv.geotask.common.utils.AutoCompleteWOReplacingTV
             android:id="@+id/autoCompleteTextView"
             android:layout_width="match_parent"

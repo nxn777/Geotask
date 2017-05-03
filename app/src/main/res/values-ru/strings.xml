@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Geotask</string>
-    <string name="action_settings">Настройки</string>
-    <string name="address_hint">Начните вводить адрес...</string>
+    <string name="address_hint">Начните вводить адрес…</string>
     <string name="geocoder_absent">"                        .setAction(\"Action\", null).show();"</string>
     <string name="coords">Широта: %1$f, Долгота: %2$f</string>
     <string name="from">Откуда</string>

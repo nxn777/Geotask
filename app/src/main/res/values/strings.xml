@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Geotask</string>
-    <string name="action_settings">Settings</string>
     <string name="address_hint">Start typing location here</string>
     <string name="geocoder_absent">Geocoder absent</string>
     <string name="geocoder_error">Obtaining geocoder data error</string>
@@ -14,7 +13,7 @@
     <string name="result_searching">Searching</string>
     <string name="result_found">Route found</string>
     <string name="result_notfound">Route not found</string>
-    <string name="result_io_error">IO error occured</string>
+    <string name="result_io_error">IO error occurred</string>
     <string name="result_decode_error">Decoding error or no route</string>
     <string name="result_title">Route</string>
     <string name="i">You are here</string>

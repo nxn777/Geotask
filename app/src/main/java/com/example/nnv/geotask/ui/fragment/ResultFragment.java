@@ -1,20 +1,15 @@
 package com.example.nnv.geotask.ui.fragment;
 
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -25,7 +20,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.arellomobile.mvp.presenter.ProvidePresenter;
 import com.example.nnv.geotask.R;
 import com.example.nnv.geotask.common.Globals;
-import com.example.nnv.geotask.common.utils.LocationAdapter;
 import com.example.nnv.geotask.presentation.presenter.ResultPresenter;
 import com.example.nnv.geotask.presentation.view.ResultView;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,17 +29,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.PolyUtil;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by nnv on 02.05.17.
+ *
  */
 
 public class ResultFragment extends MvpAppCompatFragment implements ResultView {
@@ -61,7 +50,7 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         return new ResultPresenter(getContext());
     }
 
-    /** LifeCycle */
+    // LifeCycle
 
     public ResultFragment() {
 
@@ -95,6 +84,8 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         mapFragment.getMapAsync(mResultPresenter);
     }
 
+    // Implementation of ResultView
+
     @Override
     public void toggleUI(Globals.ResultState state) {
         switch (state) {
@@ -112,8 +103,6 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
                 break;
         }
     }
-
-    /** ResultView */
 
     @Override
     public void showError(String error) {

@@ -2,7 +2,6 @@ package com.example.nnv.geotask.presentation.presenter;
 
 import android.content.Context;
 import android.location.Address;
-import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -14,13 +13,14 @@ import java.util.ArrayList;
 
 /**
  * Created by nnv on 25.04.17.
+ * Moxy Presenter for LocationTitleView - AutoCompleteTextView with progressbar and clear button
  */
 @InjectViewState
 public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         implements LocationAddressesLoader.LoaderDelegate{
 
     private LocationAddressesLoader mLoader;
-    private Context mCtx;
+    private final Context mCtx;
     private ArrayList<Address> mAddresses;
     private Address mSelectedAddress;
 
@@ -30,6 +30,10 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         mAddresses = new ArrayList<>();
     }
 
+    /**
+     * Starts geocoder query task
+     * @param location String for querying
+     */
     public void loadLocations(final String location) {
         if (mLoader != null) {
             mLoader.cancel(true);
@@ -39,6 +43,9 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         getViewState().toggleControls(Globals.SearchState.Searching);
     }
 
+    /**
+     * Updates dropdown list with address list
+     */
     public void getLocationList() {
         getViewState().toggleControls(Globals.SearchState.Typing);
         getViewState().updateLocationList(mAddresses);
@@ -52,12 +59,18 @@ public class LocationTitlePresenter extends MvpPresenter<LocationTitleView>
         return mSelectedAddress;
     }
 
+    /**
+     * Sets selected address and shows it
+     * @param selectedAddress address to be set
+     */
     public void setSelectedAddress(Address selectedAddress) {
         this.mSelectedAddress = selectedAddress;
         getViewState().showSelected(mSelectedAddress);
     }
 
-    /** LocationAddressesLoader.LoaderDelegate */
+    /* LocationAddressesLoader.LoaderDelegate implementation
+     * interaction with Geocoder querying task
+     * */
 
     @Override
     public void onLoaderReady(ArrayList<Address> resultList) {
