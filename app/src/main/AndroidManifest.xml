@@ -33,7 +33,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/api_key" />
 
-        <activity android:name=".ui.activity.ResultActivity"></activity>
+        <activity
+            android:name=".ui.activity.ResultActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
