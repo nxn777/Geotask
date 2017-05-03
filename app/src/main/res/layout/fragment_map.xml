@@ -14,7 +14,8 @@
     <FrameLayout android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@drawable/shadow">
+        android:background="@drawable/shadow"
+        android:id="@+id/actvContainer">
         <com.example.nnv.geotask.common.utils.AutoCompleteWOReplacingTV
             android:id="@+id/autoCompleteTextView"
             android:layout_width="match_parent"
@@ -24,7 +25,8 @@
             android:layout_marginStart="8dp"
             android:inputType="textCapSentences|textNoSuggestions"
             android:hint="@string/address_hint"
-            android:imeOptions="flagNoExtractUi|actionSearch"/>
+            android:imeOptions="flagNoExtractUi|actionSearch"
+            android:dropDownWidth="wrap_content" />
 
         <ProgressBar
             android:id="@+id/searchProgressBar"

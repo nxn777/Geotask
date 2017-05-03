@@ -99,7 +99,6 @@ public class LocationAdapter<T> extends BaseAdapter implements Filterable{
                     ((Address)item).getLongitude()));
         }
         convertView.setBackgroundColor((position % 2 == 0) ?  Color.alpha(240) : Color.WHITE);
-        //Log.i(Globals.TAG, "getView: "+position+" " + item.toString() + "\n");
         return convertView;
     }
 
