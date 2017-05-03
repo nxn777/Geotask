@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -75,6 +76,13 @@ public class ResultFragment extends MvpAppCompatFragment implements ResultView {
         super.onViewCreated(view, savedInstanceState);
         this.mProgressbar = (ProgressBar) view.findViewById(R.id.resultProgressBar);
         this.mTvStatus = (TextView) view.findViewById(R.id.resultTextView);
+        final LinearLayout llStatus = (LinearLayout) view.findViewById(R.id.resultStatus);
+        llStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                llStatus.setVisibility(View.GONE);
+            }
+        });
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mapResultFragment);
         toggleUI(Globals.ResultState.Searching); //TODO: add initializing state
